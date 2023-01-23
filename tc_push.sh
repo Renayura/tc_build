@@ -5,10 +5,29 @@ msg() {
 	echo -e "\e[1;32m$*\e[0m"
 }
 
-tgm "🚀 <b>Prepare to push clang to github release</b>"
-
 # Set a directory
 DIR="$(pwd)"
+
+# Telegram Setup
+git clone --depth=1 https://github.com/fabianonline/telegram.sh Telegram
+
+TELEGRAM="$(pwd)/Telegram/telegram"
+tgm() {
+	"${TELEGRAM}" -H -D \
+		"$(
+			for POST in "${@}"; do
+				echo "${POST}"
+			done
+		)"
+}
+
+tgf() {
+	"${TELEGRAM}" -H \
+		-f "$1" \
+		"$2"
+}
+
+tgm "🚀 <b>Prepare to push clang to github release</b>"
 
 # Build Info
 rel_date="$(date "+%Y%m%d")"              # ISO 8601 format
@@ -50,8 +69,8 @@ popd || exit
 # Clone Repo
 git clone "https://Renayura:$GH_TOKEN@github.com/Renayura/fortune-clang.git" rel_repo
 pushd rel_repo || exit
-echo "${clang_link}" >"$clang_version"/clang-link.txt
-echo "${build_date}" >"$clang_version"/build-date.txt
+echo "${clang_link}" > clang-link.txt
+echo "${build_date}" > build-date.txt
 git add .
 git commit -asm "fortune-clang: Add Fortune Clang build ${tags_date}
 
